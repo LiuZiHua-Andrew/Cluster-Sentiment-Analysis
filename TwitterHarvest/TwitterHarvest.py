@@ -32,8 +32,11 @@ def get_tweets(n,query=None):
         ct += 1
     return tweets
 
-def create_stream(locations,f_name='twitter.json'):
-    listener = MyStreamListener(f_name=f_name)
+def create_stream(locations,f_name=None):
+    if not f_name == None:
+        listener = MyStreamListener(f_name=f_name,output2couch=False)
+    else:
+        listener = MyStreamListener(output2couch=True,couch_host='localhost',couch_port=5984,db_name='test')
     stream = tweepy.Stream(get_authorization(), listener)
     stream.filter(locations=locations)
 
@@ -45,15 +48,16 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hf:", ["f="])
     except getopt.GetoptError:
-        print 'twitterHarverster.py -f <output_filename>'
+        print ('twitterHarverster.py -f <output_filename>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print 'test.py -f <output_filename>'
+            print ('twitterHarverster.py -f <output_filename>')
             sys.exit()
         elif opt in ("-f", "--ofile"):
             has_filename =True
             outputfile = arg
+
     if has_filename:
         create_stream(melb_locations,f_name=outputfile)
     else:
