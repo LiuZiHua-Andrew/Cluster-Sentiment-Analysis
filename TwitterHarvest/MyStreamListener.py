@@ -3,7 +3,7 @@ import couchdb
 import json
 #override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(tweepy.StreamListener):
-    def __init__(self,f_name='twitter.json',output2couch=True,couch_host='localhost',couch_port=5984,db_name='test',api=None):
+    def __init__(self,f_name='twitter.json',output2couch=True,couch_host='127.0.0.1',couch_port=5984,db_name='test',api=None):
         tweepy.StreamListener(api)
         self.f_name=f_name
         self.output2couch=output2couch
@@ -28,12 +28,12 @@ class MyStreamListener(tweepy.StreamListener):
         return True
 
     def on_error(self, status):
-        print("Error"+status)
+        print("Error"+str(status))
         return True
 
     def output2couchdb(self,data):
-        self.couch_host+":"+str(self.couch_port)
-        couch = couchdb.Server()
+        host_and_port = "http://"+self.couch_host+":"+str(self.couch_port)
+        couch = couchdb.Server(host_and_port)
         try:
             db = couch.create(self.db_name) # create db
         except:

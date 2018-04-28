@@ -36,7 +36,7 @@ def create_stream(locations,f_name=None):
     if not f_name == None:
         listener = MyStreamListener(f_name=f_name,output2couch=False)
     else:
-        listener = MyStreamListener(output2couch=True,couch_host='localhost',couch_port=5984,db_name='test')
+        listener = MyStreamListener(output2couch=True,couch_host='127.0.0.1',couch_port=5984,db_name='test')
     stream = tweepy.Stream(get_authorization(), listener)
     stream.filter(locations=locations)
 
