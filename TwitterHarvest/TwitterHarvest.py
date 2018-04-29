@@ -1,67 +1,126 @@
 import tweepy
+import couchdb
 import sys, getopt
+import json
 from MyStreamListener import MyStreamListener
 
-CONSUMER_KEY = 'M2oVoMxM2guNKG1GJFy9YvOWZ'
-CONSUMER_SECRET = '0BrWO6r2qyFUmYoXp4jbUC4QP3FjwwQmkNsgcbfQl7kWoifjgo'
-ACCESS_TOKEN = '986794857120202752-GW1GhWVRUl8ZSIEaHYf1nRprkGxBWnO'
-ACCESS_TOKEN_SECRET = 'vLxYc5SrUhPvPNEXaXghadXXeKgM8LkEsJc8xoY1lKgxs'
+def get_authorization(access_file):
+    with open(access_file) as f:
+        access_str = f.read()
 
-def get_authorization():
+    access = json.loads(access_str)
 
-    info = {"consumer_key": CONSUMER_KEY,
-            "consumer_secret": CONSUMER_SECRET,
-            "access_token": ACCESS_TOKEN,
-            "access_secret": ACCESS_TOKEN_SECRET}
+    info = {"consumer_key": access['CONSUMER_KEY'],
+            "consumer_secret": access['CONSUMER_SECRET'],
+            "access_token": access['ACCESS_TOKEN'],
+            "access_secret": access['ACCESS_TOKEN_SECRET']}
 
     auth = tweepy.OAuthHandler(info['consumer_key'], info['consumer_secret'])
     auth.set_access_token(info['access_token'], info['access_secret'])
     return auth
 
-def get_tweets(n,query=None):
-    _max_queries = 100  # arbitrarily chosen value
-    api = tweepy.API(get_authorization(),wait_on_rate_limit=True)
+# def get_tweets(n,query=None):
+#     _max_queries = 100  # arbitrarily chosen value
+#     api = tweepy.API(get_authorization(),wait_on_rate_limit=True)
+#     tweets = tweet_batch = api.search(geocode='-37.814,144.96332,500km', count=n)
+#     ct = 1
+#     while len(tweets) < n and ct < _max_queries:
+#
+#         tweet_batch = api.search(geocode='-37.814,144.96332,500km',
+#                                  count=n - len(tweets),
+#                                  max_id=tweet_batch.max_id)
+#         tweets.extend(tweet_batch)
+#         ct += 1
+#     return tweets
 
-    tweets = tweet_batch = api.search(geocode='-37.814,144.96332,500km', count=n)
-    ct = 1
-    while len(tweets) < n and ct < _max_queries:
-        tweet_batch = api.search(geocode='-37.814,144.96332,500km',
-                                 count=n - len(tweets),
-                                 max_id=tweet_batch.max_id)
-        tweets.extend(tweet_batch)
-        ct += 1
-    return tweets
+def get_tweets(access):
+    couch_host = "localhost"
+    couch_port = 5984
+    db_name = "test_old"
 
-def create_stream(locations,f_name=None):
-    if not f_name == None:
-        listener = MyStreamListener(f_name=f_name,output2couch=False)
-    else:
-        listener = MyStreamListener(output2couch=True,couch_host='127.0.0.1',couch_port=5984,db_name='test')
-    stream = tweepy.Stream(get_authorization(), listener)
+    host_and_port = "http://" + couch_host + ":" + str(couch_port)
+    couch = couchdb.Server(host_and_port)
+    try:
+        db = couch.create(db_name)  # create db
+    except:
+        db = couch[db_name]  # existing
+
+    api = tweepy.API(get_authorization(access),wait_on_rate_limit=True)
+    for status in tweepy.Cursor(api.search,q='',geocode='-25.042217096750914,134.53221344885128,2000km').items():
+        db.save(status._json)
+
+def create_stream(locations, access_json ,db_json, f_name=None):
+    with open(db_json) as f:
+        db_info = f.read()
+    db_info = json.loads(db_info)
+
+    listener = MyStreamListener(f_name=f_name, couch_host=db_info['host'], couch_port=db_info['port'], db_name=db_info['database'])
+    stream = tweepy.Stream(get_authorization(access_json), listener)
     stream.filter(locations=locations)
 
 
 def main(argv):
+    # West Australia
+    wa_location = [112.8,-35.33,129,-13.5]
+    # Northern Territory
+    nt_location = [129,-26,138,-10.75]
+    # South Australia
+    sa_location = [129,-38.1,141,-26]
+    # Queensland, NSW, Victoria, Tasmania
+    qnvt_location = [138,-26,141,-15.8, 141,-15.8,146,-10.5, 141,-43.8,154,-15.8]
     # Melbourne Coordinates
-    melb_locations = [144.7, -38.1, 145.45, -37.5]
-    has_filename =False
+    # melb_locations = [144.7, -38.1, 145.45, -37.5]
+    outputfile = 'twitter.json'
+    access_token_json = 'access.json'
+    db_json = 'db.json'
+    location = qnvt_location
     try:
-        opts, args = getopt.getopt(argv, "hf:", ["f="])
+        opts, args = getopt.getopt(argv, "ho:a:d:l:", ["outputfile=",'access=','database=','location='])
     except getopt.GetoptError:
-        print ('twitterHarverster.py -f <output_filename>')
+        print ("""-o <output_filename>
+                  -a <access_token_josn>
+                  -d <database_json>
+                  -l < West Australia: 1,
+                       Northern Territory: 2,
+                       South Australia: 3
+                       Queensland, NSW, Victoria, Tasmania: 4>
+                 """)
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print ('twitterHarverster.py -f <output_filename>')
+            print ("""-o <output_filename>
+                      -a <access_token_josn>
+                      -d <database_json>
+                      -l < West Australia: 1,
+                           Northern Territory: 2,
+                           South Australia: 3
+                           Queensland, NSW, Victoria, Tasmania: 4""")
             sys.exit()
-        elif opt in ("-f", "--ofile"):
-            has_filename =True
+        elif opt in ("-o", "--outputfile"):
             outputfile = arg
+        elif opt in ("-a", "--access"):
+            access_token_json = arg
+        elif opt in ("-d", "--database"):
+            db_json = arg
+        elif opt in ("-l", "--location"):
+            if arg == 1:
+                location = wa_location
+            elif arg == 2:
+                location = nt_location
+            elif arg == 3:
+                location = sa_location
+            elif arg == 4:
+                location = qnvt_location
+            else:
+                print ("""-l < West Australia: 1,
+                               Northern Territory: 2,
+                               South Australia: 3
+                               Queensland, NSW, Victoria, Tasmania: 4""")
+                sys.exit(2)
 
-    if has_filename:
-        create_stream(melb_locations,f_name=outputfile)
-    else:
-        create_stream(melb_locations)
+    create_stream(location, access_token_json,db_json,f_name=outputfile,)
+
+    # get_tweets(access_token_json)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
