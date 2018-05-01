@@ -52,7 +52,7 @@ suburbs = json.loads(grids_str)
 
 couch_host = "localhost"
 couch_port = 5984
-db_name = "test"
+db_name = "test_au"
 
 host_and_port = "http://"+couch_host+":"+str(couch_port)
 couch = couchdb.Server(host_and_port)
