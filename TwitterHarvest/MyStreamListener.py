@@ -27,7 +27,7 @@ class MyStreamListener(tweepy.StreamListener):
 
     def on_error(self, status):
         print("Error" + str(status))
-        if status_code == 420:
+        if status == 420:
             # returning False in on_error disconnects the stream
             return False
         return True
