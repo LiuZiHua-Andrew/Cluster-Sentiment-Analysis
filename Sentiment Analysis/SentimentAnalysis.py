@@ -66,7 +66,7 @@ def sentiment_polarity(db_json,suburbs):
                 analysis_data['hashtags'] = [ht['text'] for ht in twitter['entities']['hashtags']]
                 analysis_data['polarity'] = analyzer.polarity_scores(text)['compound']
                 analysis_data['drunk'] = drunk_filter(text)
-                analysis_data['created_at'] = twitter['created_at']
+                analysis_data['created_at'] = twitter['created_at'][:3]
                 processed_data.append(analysis_data)
 
                 if len(processed_data) == 10:
