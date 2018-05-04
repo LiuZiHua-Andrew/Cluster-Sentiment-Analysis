@@ -103,13 +103,13 @@ def main(argv):
         elif opt in ("-d", "--database"):
             db_json = arg
         elif opt in ("-l", "--location"):
-            if arg == 1:
+            if arg == '1':
                 location = wa_location
-            elif arg == 2:
+            elif arg == '2':
                 location = nt_location
-            elif arg == 3:
+            elif arg == '3':
                 location = sa_location
-            elif arg == 4:
+            elif arg == '4':
                 location = qnvt_location
             else:
                 print ("""-l < West Australia: 1,
