@@ -44,8 +44,8 @@ def get_aggregated_tweets_by_city(include_docs='false',reduce='true',group_level
 # geocoded_tweets=get_geocoded_tweets(skip='1',limit='1',auth=auth)
 # print(geocoded_tweets)
 
-geo_json=get_geo_json(limit='2',auth=auth)
-print(geo_json)
+# geo_json=get_geo_json(limit='2',auth=auth)
+# print(geo_json)
 #
 # aggregated_tweets_by_city=get_aggregated_tweets_by_city(limit='20',auth=auth)
 # print(aggregated_tweets_by_city)
@@ -55,7 +55,8 @@ def put_data_into_couchdb():
     couch_host = "localhost"
     couch_port = 5984
     db_name = "geocoded_tweets"
-    total_rows=3629417
+    total_rows=3629566
+
 
     host_and_port = "http://" + couch_host + ":" + str(couch_port)
     couch = couchdb.Server(host_and_port)
@@ -64,11 +65,13 @@ def put_data_into_couchdb():
     except:
         db = couch[db_name]  # existing
 
-    for i in range(total_rows):
-        skip=str(i)
-        geocoded_tweets = get_geocoded_tweets(skip=skip, limit='1', auth=auth)
+    limit = 10000
+    for i in range(int(total_rows/limit)):
+        skip=str(i*limit)
+        geocoded_tweets = get_geocoded_tweets(skip=skip, limit=limit, auth=auth)
+        db.update(geocoded_tweets['rows'])
 
+    geocoded_tweets = get_geocoded_tweets(skip=skip+limit, limit=limit, auth=auth)
+    db.update(geocoded_tweets['rows'])
 
-        db.save(geocoded_tweets)
-
-# put_data_into_couchdb()
+put_data_into_couchdb()
