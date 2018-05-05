@@ -60,7 +60,7 @@ def main(argv):
     qnvt_location = [138,-26,141,-15.8, 141,-15.8,146,-10.5, 141,-43.8,154,-15.8]
 
     outputfile = 'twitter.json'
-    access_token_json = 'access.json'
+    access_token_json = 'access0.json'
     db_json = 'db.json'
     grid_json ='vic.json'
     location = qnvt_location
