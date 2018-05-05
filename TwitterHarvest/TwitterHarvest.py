@@ -70,21 +70,20 @@ def main(argv):
         print ("""-o <output_filename>
                   -a <access_token_josn>
                   -d <database_json>
-                  -l < West Australia: 1,
-                       Northern Territory: 2,
-                       South Australia: 3
-                       Queensland, NSW, Victoria, Tasmania: 4>
-                 """)
+                  -l < West Australia: 3,
+                               Northern Territory: 2,
+                               South Australia: 1
+                               Queensland, NSW, Victoria, Tasmania: 0""")
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
             print ("""-o <output_filename>
                       -a <access_token_josn>
                       -d <database_json>
-                      -l < West Australia: 1,
-                           Northern Territory: 2,
-                           South Australia: 3
-                           Queensland, NSW, Victoria, Tasmania: 4""")
+                      -l < West Australia: 3,
+                               Northern Territory: 2,
+                               South Australia: 1
+                               Queensland, NSW, Victoria, Tasmania: 0""")
             sys.exit()
         elif opt in ("-o", "--outputfile"):
             outputfile = arg
@@ -93,19 +92,19 @@ def main(argv):
         elif opt in ("-d", "--database"):
             db_json = arg
         elif opt in ("-l", "--location"):
-            if arg == '0':
+            if arg == '3':
                 location = wa_location
-            elif arg == '1':
-                location = nt_location
             elif arg == '2':
+                location = nt_location
+            elif arg == '1':
                 location = sa_location
-            elif arg == '3':
+            elif arg == '0':
                 location = qnvt_location
             else:
-                print ("""-l < West Australia: 0,
-                               Northern Territory: 1,
-                               South Australia: 2
-                               Queensland, NSW, Victoria, Tasmania: 3""")
+                print ("""-l < West Australia: 3,
+                               Northern Territory: 2,
+                               South Australia: 1
+                               Queensland, NSW, Victoria, Tasmania: 0""")
                 sys.exit(2)
         elif opt in ("-g", "--grid"):
             grid_json = arg
