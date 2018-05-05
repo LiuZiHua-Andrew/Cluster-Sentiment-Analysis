@@ -19,20 +19,6 @@ def get_authorization(access_file):
     auth.set_access_token(info['access_token'], info['access_secret'])
     return auth
 
-# def get_tweets(n,query=None):
-#     _max_queries = 100  # arbitrarily chosen value
-#     api = tweepy.API(get_authorization(),wait_on_rate_limit=True)
-#     tweets = tweet_batch = api.search(geocode='-37.814,144.96332,500km', count=n)
-#     ct = 1
-#     while len(tweets) < n and ct < _max_queries:
-#
-#         tweet_batch = api.search(geocode='-37.814,144.96332,500km',
-#                                  count=n - len(tweets),
-#                                  max_id=tweet_batch.max_id)
-#         tweets.extend(tweet_batch)
-#         ct += 1
-#     return tweets
-
 def get_tweets(access):
     couch_host = "localhost"
     couch_port = 5984
@@ -49,12 +35,16 @@ def get_tweets(access):
     for status in tweepy.Cursor(api.search,q='',geocode='-25.042217096750914,134.53221344885128,2000km').items():
         db.save(status._json)
 
-def create_stream(locations, access_json ,db_json, f_name=None):
+def create_stream(locations, access_json ,db_json, grid_json, f_name=None):
     with open(db_json) as f:
         db_info = f.read()
     db_info = json.loads(db_info)
 
-    listener = MyStreamListener(f_name=f_name, couch_host=db_info['host'], couch_port=db_info['port'], db_name=db_info['database'])
+    with open(grid_json) as f:
+        grids_str = f.read()
+    suburbs = json.loads(grids_str)
+
+    listener = MyStreamListener(f_name=f_name, couch_host=db_info['host'], couch_port=db_info['port'], db_name=db_info['processed_database'],raw_db_name=db_info['raw_database'],suburbs=suburbs)
     stream = tweepy.Stream(get_authorization(access_json), listener)
     stream.filter(locations=locations)
 
@@ -68,14 +58,14 @@ def main(argv):
     sa_location = [129,-38.1,141,-26]
     # Queensland, NSW, Victoria, Tasmania
     qnvt_location = [138,-26,141,-15.8, 141,-15.8,146,-10.5, 141,-43.8,154,-15.8]
-    # Melbourne Coordinates
-    # melb_locations = [144.7, -38.1, 145.45, -37.5]
+
     outputfile = 'twitter.json'
     access_token_json = 'access.json'
     db_json = 'db.json'
+    grid_json ='vic.json'
     location = qnvt_location
     try:
-        opts, args = getopt.getopt(argv, "ho:a:d:l:", ["outputfile=",'access=','database=','location='])
+        opts, args = getopt.getopt(argv, "ho:a:d:l:g:", ["outputfile=",'access=','database=','location=','grid='])
     except getopt.GetoptError:
         print ("""-o <output_filename>
                   -a <access_token_josn>
@@ -103,22 +93,24 @@ def main(argv):
         elif opt in ("-d", "--database"):
             db_json = arg
         elif opt in ("-l", "--location"):
-            if arg == '1':
+            if arg == '0':
                 location = wa_location
-            elif arg == '2':
+            elif arg == '1':
                 location = nt_location
-            elif arg == '3':
+            elif arg == '2':
                 location = sa_location
-            elif arg == '4':
+            elif arg == '3':
                 location = qnvt_location
             else:
-                print ("""-l < West Australia: 1,
-                               Northern Territory: 2,
-                               South Australia: 3
-                               Queensland, NSW, Victoria, Tasmania: 4""")
+                print ("""-l < West Australia: 0,
+                               Northern Territory: 1,
+                               South Australia: 2
+                               Queensland, NSW, Victoria, Tasmania: 3""")
                 sys.exit(2)
+        elif opt in ("-g", "--grid"):
+            grid_json = arg
 
-    create_stream(location, access_token_json,db_json,f_name=outputfile,)
+    create_stream(location, access_token_json,db_json,grid_json,f_name=outputfile,)
 
     # get_tweets(access_token_json)
 

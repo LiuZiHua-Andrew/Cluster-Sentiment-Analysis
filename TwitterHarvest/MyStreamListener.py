@@ -1,15 +1,19 @@
 import tweepy
 import couchdb
 import json
+from SentimentAnalysis.SentimentAnalysis import sentiment_polarity
+
 #override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(tweepy.StreamListener):
-    def __init__(self,f_name='twitter.json',output2File=True,couch_host='127.0.0.1',couch_port=5984,db_name='test',api=None):
+    def __init__(self,f_name='twitter.json',output2File=False,couch_host='127.0.0.1',couch_port=5984,db_name='test',raw_db_name='test', suburbs= None,api=None):
         tweepy.StreamListener(api)
         self.f_name=f_name
         self.output2File=output2File
         self.couch_host=couch_host
         self.couch_port=couch_port
         self.db_name=db_name
+        self.raw_db_name = raw_db_name
+        self.suburbs=suburbs
 
     def on_status(self, status):
         print(status.text)
@@ -27,16 +31,28 @@ class MyStreamListener(tweepy.StreamListener):
 
     def on_error(self, status):
         print("Error" + str(status))
-        if status == 420:
-            # returning False in on_error disconnects the stream
-            return False
+        # if status == 420:
+        #     # returning False in on_error disconnects the stream
+        #     return False
         return True
 
     def output2couchdb(self,data):
         host_and_port = "http://"+self.couch_host+":"+str(self.couch_port)
         couch = couchdb.Server(host_and_port)
         try:
-            db = couch.create(self.db_name) # create db
+            db = couch[self.db_name]  # existing
         except:
-            db = couch[self.db_name] # existing
-        db.save(json.loads(data.encode('gbk')))
+            db = couch.create(self.db_name)  # create db
+
+        try:
+            raw_db = couch[self.raw_db_name]  # existing
+        except:
+            raw_db = couch.create(self.raw_db_name)  # create db
+
+        twitter = json.loads(data.encode('gbk'))
+        raw_db[twitter['id_str']] = twitter
+        info = sentiment_polarity(twitter, self.suburbs)
+        process_data = []
+        if info != None:
+            process_data.append(info)
+        db.update(process_data)
