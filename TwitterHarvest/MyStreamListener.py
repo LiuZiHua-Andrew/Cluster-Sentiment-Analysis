@@ -39,7 +39,7 @@ class MyStreamListener(tweepy.StreamListener):
         return True
 
     def output2couchdb(self,data):
-        host_and_port = "http://" + couch_user + ":" + couch_password + "@" + couch_host + ":" + str(couch_port)
+        host_and_port = "http://" + self.couch_user + ":" + self.couch_password + "@" + self.couch_host + ":" + str(self.couch_port)
         couch = couchdb.Server(host_and_port)
         try:
             db = couch[self.db_name]  # existing
