@@ -44,7 +44,7 @@ def create_stream(locations, access_json ,db_json, grid_json, f_name=None):
         grids_str = f.read()
     suburbs = json.loads(grids_str)
 
-    listener = MyStreamListener(f_name=f_name, couch_host=db_info['host'], couch_port=db_info['port'], db_name=db_info['processed_database'],raw_db_name=db_info['raw_database'],suburbs=suburbs)
+    listener = MyStreamListener(f_name=f_name,couch_user = db_info['user'],couch_password = db_info['password'], couch_host=db_info['host'], couch_port=db_info['port'], db_name=db_info['processed_database'],raw_db_name=db_info['raw_database'],suburbs=suburbs)
     stream = tweepy.Stream(get_authorization(access_json), listener)
     stream.filter(locations=locations)
 

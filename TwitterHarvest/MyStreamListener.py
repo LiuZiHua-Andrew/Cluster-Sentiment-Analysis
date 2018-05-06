@@ -5,10 +5,12 @@ from SentimentAnalysis.SentimentAnalysis import sentiment_polarity
 
 #override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(tweepy.StreamListener):
-    def __init__(self,f_name='twitter.json',output2File=False,couch_host='127.0.0.1',couch_port=5984,db_name='test',raw_db_name='test', suburbs= None,api=None):
+    def __init__(self,f_name='twitter.json',output2File=False,couch_user = 'admin',couch_password = 'admin',couch_host='127.0.0.1',couch_port=5984,db_name='test',raw_db_name='test', suburbs= None,api=None):
         tweepy.StreamListener(api)
         self.f_name=f_name
         self.output2File=output2File
+        self.couch_user=couch_user
+        self.couch_password=couch_password
         self.couch_host=couch_host
         self.couch_port=couch_port
         self.db_name=db_name
@@ -37,7 +39,7 @@ class MyStreamListener(tweepy.StreamListener):
         return True
 
     def output2couchdb(self,data):
-        host_and_port = "http://"+self.couch_host+":"+str(self.couch_port)
+        host_and_port = "http://" + couch_user + ":" + couch_password + "@" + couch_host + ":" + str(couch_port)
         couch = couchdb.Server(host_and_port)
         try:
             db = couch[self.db_name]  # existing

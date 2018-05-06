@@ -25,12 +25,15 @@ def put_data_into_couchdb(db_json,grid_json,start,end):
         db_info = f.read()
     db_info = json.loads(db_info)
 
+    couch_user = db_info['user']
+    couch_password = db_info['password']
     couch_host = db_info['host']
     couch_port = db_info['port']
     db_name = db_info['processed_database']
     raw_db_name = db_info['raw_database']
     source_url = db_info['tweet_source']
-    host_and_port = "http://" + couch_host + ":" + str(couch_port)
+    host_and_port = "http://" +couch_user+":"+couch_password+"@"+couch_host + ":" + str(couch_port)
+
     couch = couchdb.Server(host_and_port)
     try:
         db = couch.create(db_name)  # create db
@@ -41,6 +44,7 @@ def put_data_into_couchdb(db_json,grid_json,start,end):
         raw_db = couch.create(raw_db_name)  # create db
     except:
         raw_db = couch[raw_db_name]  # existing
+
 
     with open(grid_json) as f:
         grids_str = f.read()

@@ -1,4 +1,6 @@
 {
+  "user":"admin",
+  "password":"admin",
   "host":"localhost",
   "port":"5984",
   "processed_database":"processed_twitter",
