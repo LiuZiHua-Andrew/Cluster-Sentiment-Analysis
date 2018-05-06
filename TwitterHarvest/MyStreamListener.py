@@ -5,7 +5,7 @@ from SentimentAnalysis.SentimentAnalysis import sentiment_polarity
 
 #override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(tweepy.StreamListener):
-    def __init__(self,f_name='twitter.json',output2File=False,couch_user = 'admin',couch_password = 'admin',couch_host='127.0.0.1',couch_port=5984,db_name='test',raw_db_name='test', suburbs= None,api=None):
+    def __init__(self,f_name='twitter.json',output2File=False, couch_user = 'admin',couch_password = 'admin',couch_host='127.0.0.1',couch_port=5984,db_name='test',raw_db_name='test', suburbs= None,api=None):
         tweepy.StreamListener(api)
         self.f_name=f_name
         self.output2File=output2File

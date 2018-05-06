@@ -41,9 +41,9 @@ def put_data_into_couchdb(db_json,grid_json,start,end):
         db = couch[db_name]  # existing
 
     try:
-        raw_db = couch.create(raw_db_name)  # create db
-    except:
         raw_db = couch[raw_db_name]  # existing
+    except:
+        raw_db = couch.create(raw_db_name)  # create db
 
 
     with open(grid_json) as f:
@@ -58,10 +58,12 @@ def put_data_into_couchdb(db_json,grid_json,start,end):
     for i in range(int(total_rows/limit)):
         skip=str(i*limit)
         geocoded_tweets = get_geocoded_tweets(source_url,start_key=start,end_key=end,skip=skip, limit=limit, auth=auth)
+        print (i)
         process_data = []
         raw_data = []
         for tweet in geocoded_tweets['rows']:
             twitter = tweet['doc']
+            twitter.pop('_rev')
             raw_data.append(twitter)
             info = sentiment_polarity(twitter, suburbs)
             if info != None:
@@ -70,7 +72,17 @@ def put_data_into_couchdb(db_json,grid_json,start,end):
         db.update(process_data)
 
     geocoded_tweets = get_geocoded_tweets(skip=str(int(skip)+limit), limit=limit, auth=auth)
-    db.update(geocoded_tweets['rows'])
+    process_data = []
+    raw_data = []
+    for tweet in geocoded_tweets['rows']:
+        twitter = tweet['doc']
+        twitter.pop('_rev')
+        raw_data.append(twitter)
+        info = sentiment_polarity(twitter, suburbs)
+        if info != None:
+            process_data.append(info)
+    raw_db.update(raw_data)
+    db.update(process_data)
 
 
 
