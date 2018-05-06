@@ -51,7 +51,7 @@ class MyStreamListener(tweepy.StreamListener):
         except:
             raw_db = couch.create(self.raw_db_name)  # create db
 
-        twitter = json.loads(data.encode('gbk'))
+        twitter = json.loads(data.encode('utf-8'))
         raw_db[twitter['id_str']] = twitter
         info = sentiment_polarity(twitter, self.suburbs)
         process_data = []
