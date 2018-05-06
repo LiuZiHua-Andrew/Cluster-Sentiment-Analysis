@@ -17,7 +17,11 @@ def get_geocoded_tweets(url, start_key='["r1h"]',end_key='["r1z"]', include_docs
     auth=auth
     r=requests.get(url=url,params=payload,auth=auth)
 
-    return r.json()
+    try:
+        return r.json()
+    except:
+        print(r.status_code)
+        exit(-1)
 
 def put_data_into_couchdb(db_json,grid_json,start,end):
 
@@ -57,12 +61,31 @@ def put_data_into_couchdb(db_json,grid_json,start,end):
     limit = 100
     for i in range(int(total_rows/limit)):
         skip=str(i*limit)
-        geocoded_tweets = get_geocoded_tweets(source_url,start_key=start,end_key=end,skip=skip, limit=limit, auth=auth)
-        print (i)
+        try:
+            geocoded_tweets = get_geocoded_tweets(source_url, start_key=start, end_key=end, skip=skip, limit=limit,
+                                                  auth=auth)
+            print (len(geocoded_tweets['rows']))
+            process_data = []
+            raw_data = []
+            for tweet in geocoded_tweets['rows']:
+                twitter = tweet['doc']
+                twitter.pop('_rev')
+                raw_data.append(twitter)
+                info = sentiment_polarity(twitter, suburbs)
+                if info != None:
+                    process_data.append(info)
+            raw_db.update(raw_data)
+            db.update(process_data)
+        except:
+            pass
+
+    try:
+        geocoded_tweets = get_geocoded_tweets(source_url, start_key=start, end_key=end, skip=skip, auth=auth)
         process_data = []
         raw_data = []
         for tweet in geocoded_tweets['rows']:
             twitter = tweet['doc']
+            # Remove _rev so the data can be stored in couchdb
             twitter.pop('_rev')
             raw_data.append(twitter)
             info = sentiment_polarity(twitter, suburbs)
@@ -70,19 +93,9 @@ def put_data_into_couchdb(db_json,grid_json,start,end):
                 process_data.append(info)
         raw_db.update(raw_data)
         db.update(process_data)
+    except:
+        pass
 
-    geocoded_tweets = get_geocoded_tweets(skip=str(int(skip)+limit), limit=limit, auth=auth)
-    process_data = []
-    raw_data = []
-    for tweet in geocoded_tweets['rows']:
-        twitter = tweet['doc']
-        twitter.pop('_rev')
-        raw_data.append(twitter)
-        info = sentiment_polarity(twitter, suburbs)
-        if info != None:
-            process_data.append(info)
-    raw_db.update(raw_data)
-    db.update(process_data)
 
 
 
