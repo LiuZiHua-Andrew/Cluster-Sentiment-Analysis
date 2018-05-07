@@ -33,7 +33,6 @@ def put_data_into_couchdb(db_json,grid_json,data_json):
     except:
         raw_db = couch.create(raw_db_name)  # create db
 
-
     with open(grid_json) as f:
         grids_str = f.read()
     suburbs = json.loads(grids_str)
@@ -46,24 +45,24 @@ def put_data_into_couchdb(db_json,grid_json,data_json):
         process_data = []
         raw_data = []
         for i in range(500):
+            line = f.readline().strip("\n").strip()
+            if line[-1] == ",":
+                line = line[:-1]
             try:
-                line = f.readline().strip("\n").strip()
-                if line[-1] == ",":
-                    line = line[:-1]
                 tweet = json.loads(line)
-                twitter = tweet['doc']
-                twitter.pop('_rev')
-                raw_data.append(twitter)
-                info = sentiment_polarity(twitter, suburbs)
-                if info != None:
-                    process_data.append(info)
-                count += 1
             except:
                 raw_db.update(raw_data)
                 db.update(process_data)
                 print (count)
                 print ("Done.")
                 exit()
+            twitter = tweet['doc']
+            twitter.pop('_rev')
+            raw_data.append(twitter)
+            info = sentiment_polarity(twitter, suburbs)
+            if info != None:
+                process_data.append(info)
+            count += 1
         raw_db.update(raw_data)
         db.update(process_data)
 
