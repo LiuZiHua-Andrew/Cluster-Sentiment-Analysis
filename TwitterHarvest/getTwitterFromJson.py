@@ -38,7 +38,7 @@ def put_data_into_couchdb(db_json,grid_json,data_json):
         grids_str = f.read()
     suburbs = json.loads(grids_str)
 
-    with open(data_json) as f:
+    with open(data_json,'r',encoding='utf-8') as f:
         data = f.read()
     geocoded_tweets = json.loads(data)
 

@@ -38,7 +38,7 @@ def put_data_into_couchdb(db_json,grid_json,data_json):
         grids_str = f.read()
     suburbs = json.loads(grids_str)
 
-    f = open(data_json)
+    f = open(data_json,encoding='utf-8')
     f.readline()
     count = 0
     while True:

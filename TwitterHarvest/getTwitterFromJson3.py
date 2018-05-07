@@ -52,7 +52,7 @@ def put_data_into_couchdb(db_json,grid_json,data_json):
         for r in range(comm_size):
             rough_start.append(r * int(FILE_SIZE / comm_size))
         start = [0] * (comm_size + 1)
-        file = open(data_json,"r")
+        file = open(data_json,"r",encoding='utf-8')
         start[0] = len(file.readline())  # Skip the first line
 
         # Find the actual start position by moving the file reading pointer to the next line
@@ -68,7 +68,7 @@ def put_data_into_couchdb(db_json,grid_json,data_json):
 
 
 
-    file = open(data_json,"r")
+    file = open(data_json,"r",encoding='utf-8')
     file.seek(start[rank])  # Move the file reading pointer to starting position
     file.readline()
     count = 0
