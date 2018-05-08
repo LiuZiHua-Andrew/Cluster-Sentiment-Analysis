@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='table.css')}}">
+    <script type="text/javascript" src="{{url_for('static',filename='table.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static',filename='jquery-3.3.1.min.js')}}"></script>
+    <script src="{{url_for('static',filename='echarts.min.js')}}"></script>
+    <script src="{{url_for('static',filename='dark.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static',filename='echarts-wordcloud.min.js')}}"></script>
+    
+</head>
+<body>
+    <div class="header">
+        <div class="headerTitle">
+            Sentimental Analysis In Victoria
+        </div>
+        {%if name%}
+          <div class="detailTitle" id="suburbName_con" >
+            <div class="label">Surburb Name: </div>
+            <div id="stateName">{{ name.split('|')[0] }}</div>
+          </div>
+          <div class="detailTitle" id="incoming_con">
+            <div class="label">Suburb Avg Incoming: </div>
+            <div id="incoming">{{ name.split('|')[1] }} AU</div>
+          </div>
+          <div class="detailTitle" id="uni_con">
+              <div class="label">Suburb Education Rate(Over Bachelor): </div>
+              <div id="uni">{{ name.split('|')[2] }}</div>
+          </div>
+        {% else %}
+          <h1>Hello, World!</h1>
+        {% endif %}
+    </div>
+    
+    <div class="buttonContainer"><button id="incomingButton" onclick="polarity_Drunk_Table()">Polarity&Drunk_Table</button></div>
+    <div class="buttonContainer"><button id="wordCloudButton" onclick="wordCloud()">WordCloud</button></div>
+    <div id="lineTable"></div>
+    <div id="wordCloud"></div>
+
+    <script type="text/javascript">
+    function polarity_Drunk_Table(){
+        var result_data;
+        var stateName = '{"stateName":"'+document.getElementById('stateName').innerHTML+'"}';
+        var dataDrunk = [0,0,0,0,0,0,0];
+        var dataPolarity = [0,0,0,0,0,0,0];
+        $.post('/drunk',stateName,function(result){
+           try{
+            result_polarity = result['dataPolarity']
+            result_drunk = result['dataDrunk'];
+            console.log(result_polarity);
+            console.log(result_drunk);
+            if(result_drunk['Mon'] >= 0 && result_polarity['Mon'] < 1){
+                console.log(result_drunk['Mon']);
+                dataDrunk[0] = result_drunk['Mon'];
+                dataDrunk[1] = result_drunk['Tue'];
+                dataDrunk[2] = result_drunk['Wed'];
+                dataDrunk[3] = result_drunk['Thu'];
+                dataDrunk[4] = result_drunk['Fri'];
+                dataDrunk[5] = result_drunk['Sat'];
+                dataDrunk[6] = result_drunk['Sun'];
+
+                dataPolarity[0] = result_polarity['Mon'];
+                dataPolarity[1] = result_polarity['Tue'];
+                dataPolarity[2] = result_polarity['Wed'];
+                dataPolarity[3] = result_polarity['Thu'];
+                dataPolarity[4] = result_polarity['Fri'];
+                dataPolarity[5] = result_polarity['Sat'];
+                dataPolarity[6] = result_polarity['Sun'];
+            draw_polarity_drunk_Chart(dataDrunk,dataPolarity)
+            }else{
+                dataDrunk=[1,2,3,4,5,6,7]
+                dataPolarity=[7,6,5,4,3,2,1]
+                draw_polarity_drunk_Chart(dataDrunk,dataPolarity)
+            }
+           }catch(error){
+               console.log('ERROR')
+               dataDrunk=[1,2,3,4,5,6,7]
+               dataPolarity=[7,6,5,4,3,2,1]
+               draw_polarity_drunk_Chart(dataDrunk,dataPolarity)
+           }
+        });
+    }
+    function draw_polarity_drunk_Chart(dataDrunk,dataPolarity){
+        var myChart = echarts.init(document.getElementById('lineTable'),'dark');
+
+        var drunk = dataDrunk.map(function (item) {
+                    return item
+                });
+        var polarity = dataPolarity.map(function (item) {
+                    return item
+                });
+        option = {
+            title: {
+                text: 'Polarity & Drunk'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['Drunk','Polarity']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: ['Monday','Thuesday','Wednesday','Thursday','Friday','Sarturday','Sunday']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name:'Drunk_Rate',
+                    type:'line',
+                    stack: 'drunk',
+                    data:drunk
+                },
+                {
+                    name:'Polarity',
+                    type:'line',
+                    stack: 'polarity',
+                    data:polarity
+                }
+            ]
+        };
+        myChart.setOption(option);
+    }
+
+    function wordCloud(){
+        var stateName = '{"stateName":"'+document.getElementById('stateName').innerHTML+'"}';
+        $.post('/wordCloud',stateName,function(result){
+            var wordCloud = result['data']
+            console.log(wordCloud)
+            var chart = echarts.init(document.getElementById('wordCloud'));
+            
+            var data = [];
+
+            for (var name in wordCloud) {
+                data.push({
+                name: name,
+                value: Math.sqrt(wordCloud[name])
+                })
+            }
+
+            var maskImage = new Image();
+
+
+
+            var option = {
+
+                series: [ {
+
+                    type: 'wordCloud',
+
+                    sizeRange: [10, 100],
+
+                    rotationRange: [-90, 90],
+
+                    rotationStep: 45,
+
+                    gridSize: 2,
+
+                    shape: 'pentagon',
+
+                    maskImage: maskImage,
+
+                    drawOutOfBound: false,
+
+                    textStyle: {
+
+                        normal: {
+
+                            color: function () {
+
+                                return 'rgb(' + [
+
+                                    Math.round(Math.random() * 160),
+
+                                    Math.round(Math.random() * 160),
+
+                                    Math.round(Math.random() * 160)
+
+                                ].join(',') + ')';
+
+                            }
+
+                        },
+
+                        emphasis: {
+
+                            color: 'red'
+
+                        }
+
+                    },
+
+                    data: data.sort(function (a, b) {
+
+                        return b.value  - a.value;
+
+                    })
+
+                } ]
+
+            };
+
+
+
+            maskImage.onload = function () {
+
+                option.series[0].maskImage
+
+                chart.setOption(option);
+
+            }
+
+
+
+            maskImage.src = "{{url_for('static',filename='logo.png')}}";
+
+
+
+            window.onresize = function () {
+
+                chart.resize();
+
+            }
+
+        });
+    }
+    </script>
+</body>
+</html>

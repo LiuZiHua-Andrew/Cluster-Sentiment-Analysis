@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='map.css')}}">
+        <script type="text/javascript" src="{{url_for('static',filename='map.js')}}"></script>
+        <script type="text/javascript" src="{{url_for('static',filename='jquery-3.3.1.min.js')}}"></script>
+    </head>
+        <body>
+            <div class="header">
+                <div class="headerTitle">
+                    Sentimental Analysis In Victoria
+                </div>
+            </div>
+
+            <div class="menu">
+                <div>
+                    <span>
+                        <label id="data-label"></label>
+                        <label id="data-value"></label>
+                    </span>
+                    <select id="Aurin-Variable">
+                        <option value="https://raw.githubusercontent.com/lotharJiang/Cluster-Sentiment-Analysis/master/Data%20Visualisation/education%26incoming.json incoming median11">Relationship between Sentiment and Incoming</option>
+                        <option value="https://raw.githubusercontent.com/lotharJiang/Cluster-Sentiment-Analysis/master/Data%20Visualisation/education%26incoming.json uni uni">Relationship between Sentiment and High Education Rate</option>
+                        <option value="/sentiment polarity polarity">Suburb Polarity</option>
+                    </select>     
+                </div>       
+            </div>
+
+            <div id="mapContainer">
+                    <div class="des_word" id="stateName"></div>
+                    <div class="des_word" id="incoming"></div>
+                    <div class="des_word" id="uni"></div>
+                        <div id="map"></div>
+            </div>
+            
+            <script async defer 
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDi2dy8ARam8rxIZYDgSmGOgvXXD26yHoc&callback=initMap"></script>
+        </body>
+
+</html>

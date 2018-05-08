@@ -1,0 +1,93 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+.header{
+    margin: 0;
+    margin-right:auto;
+    margin-left:auto;
+    width: 1024px;
+    height:140px;
+    background: #64BDF7;
+    position: relative;
+  }
+  .headerTitle{
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 30px;
+    font-weight: bold;
+    color: aliceblue;
+    position:absolute;
+  }
+  .detailTitle{
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 20px;
+    font-weight: bold;
+    color: maroon;
+    position:absolute;
+    bottom: 0;
+  }
+#suburbName_con{
+    bottom:55px;
+}
+#incoming_con{
+    bottom:28px;
+}
+.label{
+    display:inline-block;
+    color:black
+}
+#stateName{
+    display:inline-block;
+    color: maroon;
+  }
+#incoming{
+    display: inline;
+    color: maroon;
+}
+#uni{
+    display: inline;
+    color: maroon;
+}
+
+#lineTable{
+    margin-right:auto;
+    margin-left:auto;
+    height: 200px;
+    width:1024px;
+    margin-top: 15px;
+}
+#wordCloud{
+    margin-right:auto;
+    margin-left:auto;
+    height: 700px;
+    width:1024px;
+    margin-top: 15px;
+}
+#line{
+    margin-right:auto;
+    margin-left:auto;
+    height: 10px;
+    width:1024px;
+    color: red;
+    margin-top: 15px;
+}
+.buttonContainer{
+    width:1024px;
+    margin-right:auto;
+    margin-left:auto;
+    align-self: left;
+    /* display:inline-block; */
+
+}
+#incomingButton{
+    /* float: left; */
+    width: 200px;
+    display:inline-block;
+}
+#wordCloudButton{
+    /* float: left; */
+    width:200px;
+    display:inline-block;
+}
