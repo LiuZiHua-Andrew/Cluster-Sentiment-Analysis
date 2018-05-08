@@ -43,7 +43,7 @@
         var stateName = '{"stateName":"'+document.getElementById('stateName').innerHTML+'"}';
         var dataDrunk = [0,0,0,0,0,0,0];
         var dataPolarity = [0,0,0,0,0,0,0];
-        $.post('/drunk',stateName,function(result){
+        $.post('/test2',stateName,function(result){
            try{
             result_polarity = result['dataPolarity']
             result_drunk = result['dataDrunk'];
@@ -138,7 +138,7 @@
 
     function wordCloud(){
         var stateName = '{"stateName":"'+document.getElementById('stateName').innerHTML+'"}';
-        $.post('/wordCloud',stateName,function(result){
+        $.post('/test',stateName,function(result){
             var wordCloud = result['data']
             console.log(wordCloud)
             var chart = echarts.init(document.getElementById('wordCloud'));
