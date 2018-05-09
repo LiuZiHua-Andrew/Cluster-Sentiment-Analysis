@@ -38,32 +38,21 @@ html, body {
     display:inline-block;
     color:black
 }
-#stateName{
-    display:inline-block;
-    color: maroon;
-  }
+
 #incoming{
     display: inline;
-    color: maroon;
 }
 #uni{
     display: inline;
-    color: maroon;
 }
 
-#lineTable{
+.slide{
     margin-right:auto;
     margin-left:auto;
-    height: 200px;
+    height: 550px;
     width:1024px;
     margin-top: 15px;
-}
-#wordCloud{
-    margin-right:auto;
-    margin-left:auto;
-    height: 700px;
-    width:1024px;
-    margin-top: 15px;
+
 }
 #line{
     margin-right:auto;
@@ -90,4 +79,17 @@ html, body {
     /* float: left; */
     width:200px;
     display:inline-block;
+}
+.des_word{
+  /* display: none; */
+  margin-top:0 !important;
+  margin-right:auto;
+  margin-left:auto;
+  width: 50%;
+  height:100%;
+  color: #FFFFFF;
+  float:left;
+  position: relative;
+  z-index: 2;
+  /* visibility: hidden */
 }
