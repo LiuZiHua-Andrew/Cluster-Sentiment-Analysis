@@ -1,3 +1,7 @@
+<!--
+Cluster Sentiment Analysis Project, CCC2018-35, Melbourne
+Members: Yan Jiang 816920, Yijiang Liu 848008, Zihua Liu 857673, Zhenxiang Wang 879694, Lingtao Jiang 867583
+ -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -107,7 +111,7 @@
         console.log(stateName)
         var dataDrunk = [0,0,0,0,0,0,0];
         var dataPolarity = [0,0,0,0,0,0,0];
-        $.post('/test2',stateName,function(result){
+        $.post('/drunk',stateName,function(result){
            try{
             result_polarity = result['dataPolarity']
             result_drunk = result['dataDrunk'];
@@ -202,7 +206,7 @@
 
     function wordCloud(){
         var stateName = '{"stateName":"'+document.getElementById('stateName').innerHTML+'"}';
-        $.post('/test',stateName,function(result){
+        $.post('/wordCloud',stateName,function(result){
             var wordCloud = result['data']
             console.log(wordCloud)
             var chart = echarts.init(document.getElementById('wordCloud'));

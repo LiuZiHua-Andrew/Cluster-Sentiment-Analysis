@@ -1,3 +1,7 @@
+//
+//Cluster Sentiment Analysis Project, CCC2018-35, Melbourne
+//Members: Yan Jiang 816920, Yijiang Liu 848008, Zihua Liu 857673, Zhenxiang Wang 879694, Lingtao Jiang 867583
+//
 var map;
 
 
@@ -210,7 +214,7 @@ function loadAurinData(variable){
   var second_url = second.toString().split(" ")[0];
   var second_attribute = second.toString().split(" ")[1];
   var second_attribute_value = second.toString().split(" ")[2];
-  var sentiment = '/test3';
+  var sentiment = '/sentiment';
 
     $.get(url, function(result){
 
@@ -267,7 +271,7 @@ function loadAurinData2(variable){
   var second_url = second.toString().split(" ")[0];
   var second_attribute = second.toString().split(" ")[1];
   var second_attribute_value = second.toString().split(" ")[2];
-  var sentiment = '/test3';
+  var sentiment = '/sentiment';
 
 
 

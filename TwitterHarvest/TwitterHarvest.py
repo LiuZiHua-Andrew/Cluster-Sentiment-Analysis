@@ -1,3 +1,7 @@
+"""
+Cluster Sentiment Analysis Project, CCC2018-35, Melbourne
+Members: Yan Jiang 816920, Yijiang Liu 848008, Zihua Liu 857673, Zhenxiang Wang 879694, Lingtao Jiang 867583,
+"""
 import tweepy
 import couchdb
 import sys, getopt

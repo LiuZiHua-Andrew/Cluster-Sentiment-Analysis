@@ -1,15 +1,12 @@
+"""
+Cluster Sentiment Analysis Project, CCC2018-35, Melbourne
+Members: Yan Jiang 816920, Yijiang Liu 848008, Zihua Liu 857673, Zhenxiang Wang 879694, Lingtao Jiang 867583,
+"""
+
 import json
 import couchdb
 import sys,getopt
 from couchdb.design import ViewDefinition
-# reduce_fun = "function(keys, values) { return sum(values)/values.length }"
-# view_tuples = \
-#     [("surbub_polarity","function(doc) { emit(doc.suburb, doc.polarity);}",reduce_fun),
-#      ("surbub_day_polarity","function(doc) { emit([doc.suburb,doc.created_at], doc.polarity);}",reduce_fun),
-#      ("surbub_drunk","function(doc) { emit(doc.suburb, doc.drunk);}",reduce_fun),
-#      ("surbub_day_drunk","function(doc) { emit([doc.suburb, doc.created_at], doc.drunk);}",reduce_fun),
-#      ("surbub_hash","function (doc) {if(doc.hashtags.length>0){for(var i=0; i < doc.hashtags.length;i++){sub_hash = [doc.suburb, doc.hashtags[i]];emit(sub_hash, 1);}}}","function(keys, values) { return sum(values)}")
-#      ]
 
 def create_view(db, view_tuples):
     for vt in view_tuples:
